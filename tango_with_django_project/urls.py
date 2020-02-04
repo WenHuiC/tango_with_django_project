@@ -17,16 +17,17 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from rango import views
+# The 2 lines below, are for setting up the serving og media ih development environment
+# To tell Django to serve static content from MEDIA_URL
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('rango/about/', views.about, name='about'),
     path('rango/', include('rango.urls')),
-
-
-    # path('rango/about/', include('index.urls')),
     
     # The above maps any URLs starting with rango/ to be handled by rango.
     path('admin/', admin.site.urls),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
