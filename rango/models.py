@@ -1,5 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+# from rango.models import UserProfile
 
 # Create your models here.
 class Category(models.Model):
@@ -22,6 +23,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Page(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     title = models.CharField(max_length=128)
@@ -35,3 +37,18 @@ class Page(models.Model):
 
     def __str__(self):
         return self.title
+
+# #chap 9
+# class UserProfile(models.Model):
+#     # this line is required.
+#     # Links UserProfile to a User model instance.
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+#     # the additional attributes we wish to include
+#     # set blank=True allows the field to be blank if necessary
+#     website = models.URLFeild(blank=True)
+#     # set upload_to to store img in the specific directory
+#     picture = models.ImageField(upload_to='profile_images', blank=True)
+
+#     def __str__(self):
+#         return self.user.username   
