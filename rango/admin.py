@@ -4,6 +4,7 @@ from django.contrib import admin
 # Category and Page are missing in the admin interface
 from django.contrib import admin
 from rango.models import Category, Page
+from rango.models import UserProfile
 
 # Add in this class to customise the Admin Interface
 class CategoryAdmin(admin.ModelAdmin):
@@ -19,3 +20,5 @@ class PageAdmin(admin.ModelAdmin):
 # from (Category) --> (Category, CategoryAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Page, PageAdmin)
+admin.site.register(UserProfile)
+

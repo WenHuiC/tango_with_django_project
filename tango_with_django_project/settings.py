@@ -42,8 +42,6 @@ MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -57,12 +55,12 @@ INSTALLED_APPS = [
 ]
 
 #chap 9
-# PASSWORD_HASHERS = (
-#     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-#     'django.contrib.auth.hashers.BCryptPasswordHasher',
-#     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-#     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-# )
+PASSWORD_HASHERS = (
+    # 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    # 'django.contrib.auth.hashers.BCryptPasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        # 'OPTIONS': { 'min_length': 6,}
+        'OPTIONS': { 'min_length': 6,}
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -147,4 +145,7 @@ USE_TZ = True
 STATICFILES_DIRS = [STATIC_DIR,]
 STATIC_URL = '/static/'
 
-
+# chap 9
+# define the variable with the URL to redirect users to that aren’t logged in
+# LOGIN_URL = '/rango/login/' rewrite with:
+LOGIN_URL = 'rango:login'
