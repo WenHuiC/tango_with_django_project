@@ -13,8 +13,10 @@ from django.urls import reverse
 from rango.forms import UserForm, UserProfileForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 from django.contrib.auth import logout
 #  or can add like: from django.contrib.auth import authenticate, login, logout
+
 
 
 def index(request):
@@ -31,6 +33,19 @@ def index(request):
     context_dict['categories'] = category_list
     context_dict['pages'] = page_list
 
+    # chap 10
+    # set test cookie
+    # request.session.set_test_cookie()
+    # Obtain our Response object early so we can add cookie information
+    response = render(request, 'rango/index.html', context=context_dict)
+    # Call the helper function to handle the cookie
+    visitor_cookie_handler(request)
+    # context_dict['visits'] = request.session['visits']
+    context_dict['visits'] = int(request.COOKIES.get('visits', '1'))
+
+    # Return response back to the user, updateing any cookies that need changed
+    return response
+
 
     # Before Chap 5
     # # Construct a dictionary to pass to the template engine as its context.
@@ -42,7 +57,7 @@ def index(request):
     # Note that the first parameter is the template we wish to use.
     
     #Render the response and send it back
-    return render(request, 'rango/index.html', context = context_dict)
+    # return render(request, 'rango/index.html', context = context_dict) # replaced by chap 10
     # return HttpResponse("Rango says hey there partner! <a href='/rango/about/'>About</a>")
 
 
@@ -52,7 +67,17 @@ def about(request):
     print(request.method)
     # prints out the user name, if no one is logged in it prints 'AnonymousUser'
     print(request.user)
-    return render(request, 'rango/about.html', {})
+
+    # chap 10 # set test cookie
+    # if request.session.test_cookie_worked():
+    #     print("TEST COOKIE WORKED!")
+    #     request.session.delete_test_cookie()
+
+    context_dict = {}
+    visitor_cookie_handler(request)
+    context_dict['visits'] = int(request.COOKIES.get('visits', '1'))
+
+    return render(request, 'rango/about.html', context=context_dict)
 
 
     # context_dict = {'putTutorial' : 'This tutorial has been put together by Wenhui.'}
@@ -264,3 +289,53 @@ def user_logout(request):
     # Take the user back to the homepage
     return redirect(reverse('rango:index'))
 
+
+# chap 10 
+# a helper method
+def get_server_side_cookie(request, cookie, default_val=None):
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
+    # now update the visitor_cookie_handler(request, response) function - take out responses
+
+# update the function definition
+def visitor_cookie_handler(request):
+    visits = int(get_server_side_cookie(request, 'visits', '1'))
+    last_visit_cookie = get_server_side_cookie(request, 'last_visit',
+                                                        str(datetime.now()))
+    last_visit_time = datetime.strptime(last_visit_cookie[:-7], '%Y-%m-%d %H:%M:%S')
+    if (datetime.now() - last_visit_time).days > 0:
+        visits = visits + 1
+        request.session['last_visit'] = str(datetime.now())
+    else:
+        request.session['last_visit'] = last_visit_cookie
+
+    request.session['visits'] = visits
+
+
+
+
+# chap 10 - a helper function to handle cookie - before p188
+# will not return a response object
+# def visitor_cookie_handler(request, response):
+#     # Get the number of visits to the site
+#     # We use the COOKIES.get() function to obtain the visits cookie
+#     # If the cookie exists, the value returned is casted to an integer
+#     # If the cookie doesn't exist, then the default value of 1 is used
+#     visits = int(request.COOKIES.get('visits', '1'))
+
+#     last_visit_cookie = request.COOKIES.get('last_visit', str(datetime.now()))
+#     last_visit_time = datetime.strptime(last_visit_cookie[:-7], '%Y-%m-%d %H:%M:%S')
+
+#     # If it's been more than a day since the last visit
+#     if (datetime.now() - last_visit_time).days > 0:
+#         visits = visits + 1
+#         # Update the last visit cookie now that we have update the count
+#         response.set_cookie('last_visit', str(datetime.now()))
+#     else:
+#         # Set the last visits cookie
+#         response.set_cookie('last_visit', last_visit_cookie)
+
+#         # Update/set the visits cookie
+#         response.set_cookie('visits', visits)
